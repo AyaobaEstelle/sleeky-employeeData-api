@@ -1,43 +1,47 @@
-import {Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import {Body, Controller, Delete, Get, Param, Post, Put, Query, Req, UseGuards } from '@nestjs/common';
 import { EmployeesService } from './employees.service';
 import { Employee } from './schemas/employee.schema';
 import { CreateEmployeeDto } from './dto/create-employee-dto';
 import { UpdateEmployeeDto } from './dto/update-employee-dto';
+import { PaginationDto } from './dto/pagination-dto';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('employees')
 export class EmployeesController {
     constructor(private readonly employeeService: EmployeesService) {}
 
-    @Get()
-    async getAllEmployees(): Promise<Employee[]> { 
-        return this.employeeService.findAll(); 
-    }CreateEmployeeDto 
+     @Get()
+  async findAll(@Query() paginationDto: PaginationDto) {
+    const { page = 1, limit = 10 } = paginationDto;
+    return this.employeeService.findAllEmployee({ page, limit });
+  }
 
     @Post()
+    @UseGuards(AuthGuard())
     async createEmployee(
         @Body()
-        employee: CreateEmployeeDto
+        employee: CreateEmployeeDto,
+        @Req() req
         ): Promise<Employee> { 
-        return this.employeeService.create(employee);
+        return this.employeeService.createEmployee(employee, req.user);
     }
 
     @Get(':id')
     async getEmployee(@Param('id') id: string): Promise<Employee> { 
-        return this.employeeService.findById(id); 
+        return this.employeeService.findEmployeeById(id); 
     }
 
     @Put(':id')
-    async updateEmployee(
-        @Param('id')
-         id: string,
-        @Body()
-        employee: UpdateEmployeeDto
-        ): Promise<Employee> { 
-        return this.employeeService.updateById(id, employee); 
-    }
+async updateEmployee(
+  @Param('id') id: string, 
+  @Body() updateEmployeeDto: UpdateEmployeeDto 
+): Promise<Employee> { 
+  return this.employeeService.updateEmployeeById(id, updateEmployeeDto); 
+}
+
 
     @Delete(':id')
     async deleteEmployee(@Param('id') id: string): Promise<Employee> { 
-        return this.employeeService.deleteById(id); 
+        return this.employeeService.deleteEmployeeById(id); 
     }
 }

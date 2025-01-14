@@ -1,4 +1,5 @@
-import { IsString, IsEmail, IsNotEmpty, IsDateString, Length, Matches } from 'class-validator';
+import { IsString, IsEmail, IsNotEmpty, IsDateString, Length, Matches, IsEmpty } from 'class-validator';
+import { User } from 'src/auth/schemas/user.schema';
 
 export class CreateEmployeeDto {
   @IsNotEmpty()
@@ -73,4 +74,7 @@ export class CreateEmployeeDto {
   @IsNotEmpty()
   @IsString()
   readonly educationalLevel: string;
+
+  @IsEmpty({message: "cannot pass user id"})
+  readonly user: User
 }

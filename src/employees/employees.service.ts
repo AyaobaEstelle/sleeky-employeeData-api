@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Employee } from './schemas/employee.schema';
 import mongoose from 'mongoose';
 import { UpdateEmployeeDto } from './dto/update-employee-dto';
+import { User } from 'src/auth/schemas/user.schema';
 
 @Injectable()
 export class EmployeesService {
@@ -31,7 +32,9 @@ export class EmployeesService {
       }
     
 
-    async createEmployee(employee: Employee): Promise<Employee> {
+    async createEmployee(employee: Employee, user: User): Promise<Employee> {
+
+      const data = Object.assign(employee, { user: user._id });
         const res = await this.employeeModel.create(employee);
         return res;
     }

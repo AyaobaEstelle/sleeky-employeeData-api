@@ -1,29 +1,29 @@
-import {Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
+import {Body, Controller, Delete, Get, Param, Post, Put, Query, Req, UseGuards } from '@nestjs/common';
 import { EmployeesService } from './employees.service';
 import { Employee } from './schemas/employee.schema';
 import { CreateEmployeeDto } from './dto/create-employee-dto';
 import { UpdateEmployeeDto } from './dto/update-employee-dto';
 import { PaginationDto } from './dto/pagination-dto';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('employees')
 export class EmployeesController {
     constructor(private readonly employeeService: EmployeesService) {}
 
-  
      @Get()
   async findAll(@Query() paginationDto: PaginationDto) {
     const { page = 1, limit = 10 } = paginationDto;
     return this.employeeService.findAllEmployee({ page, limit });
   }
 
-
-
     @Post()
+    @UseGuards(AuthGuard())
     async createEmployee(
         @Body()
-        employee: CreateEmployeeDto
+        employee: CreateEmployeeDto,
+        @Req() req
         ): Promise<Employee> { 
-        return this.employeeService.createEmployee(employee);
+        return this.employeeService.createEmployee(employee, req.user);
     }
 
     @Get(':id')

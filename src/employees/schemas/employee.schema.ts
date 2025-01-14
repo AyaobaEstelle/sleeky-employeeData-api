@@ -1,4 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import mongoose from 'mongoose';
+import { User } from 'src/auth/schemas/user.schema';
 
 @Schema({ timestamps: true })
 
@@ -53,6 +55,9 @@ export class Employee {
 
   @Prop({ required: true })
   educationalLevel: string;
+
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
+  user: User;
 }
 
 export const EmployeeSchema = SchemaFactory.createForClass(Employee);
